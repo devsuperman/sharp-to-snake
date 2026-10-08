@@ -2,7 +2,7 @@
 
 Usage:
     python runner.py list
-    python runner.py test 01        # one lesson ("final" for the GPS project)
+    python runner.py test 01        # one lesson ("final" / "migration" = the two projects)
     python runner.py test all
     python runner.py progress
 """
@@ -43,9 +43,20 @@ LESSONS: tuple[Lesson, ...] = (
     Lesson("10", "Async basics", "tests/test_ex10_*.py"),
     Lesson("11", "Type hints", "tests/test_ex11_*.py"),
     Lesson("final", "Final project: GPS fleet tracker", "final_project/tests/test_gps_*.py"),
+    # Part 2: scripts and automation (read, understand and migrate existing Python scripts)
+    Lesson("12", "Reading legacy scripts", "tests/test_ex12_*.py"),
+    Lesson("13", "Dates, time zones and data idioms", "tests/test_ex13_*.py"),
+    Lesson("14", "Consuming REST APIs reliably", "tests/test_ex14_*.py"),
+    Lesson(
+        "migration",
+        "Part 2 project: migrate a legacy sync script",
+        "migration_project/tests/test_*.py",
+    ),
 )
 LESSONS_BY_ID = {lesson.id: lesson for lesson in LESSONS}
-NUMBERED = [lesson for lesson in LESSONS if lesson.id != "final"]
+PROJECT_LABELS = {"final": "Final project", "migration": "Part 2 project"}
+PROJECT_IDS = tuple(PROJECT_LABELS)  # tracked apart from the numbered lessons
+NUMBERED = [lesson for lesson in LESSONS if lesson.id not in PROJECT_IDS]
 
 
 def load_progress() -> dict[str, dict]:
@@ -103,11 +114,11 @@ def status_label(record: dict | None) -> str:
 
 def cmd_list(_: argparse.Namespace) -> int:
     progress = load_progress()
-    print(f"{'ID':<6}{'Status':<13}{'Tests':<9}Title")
+    print(f"{'ID':<11}{'Status':<13}{'Tests':<9}Title")
     for lesson in LESSONS:
         record = progress.get(lesson.id)
         tests = f"{record['passed']}/{record['total']}" if record else "-"
-        print(f"{lesson.id:<6}{status_label(record):<13}{tests:<9}{lesson.title}")
+        print(f"{lesson.id:<11}{status_label(record):<13}{tests:<9}{lesson.title}")
     return 0
 
 
@@ -145,8 +156,9 @@ def cmd_progress(_: argparse.Namespace) -> int:
     done = sum(1 for lesson in NUMBERED if progress.get(lesson.id, {}).get("completed"))
     bar = "#" * done + "." * (len(NUMBERED) - done)
     print(f"Lessons: {done}/{len(NUMBERED)}  [{bar}]")
-    final_done = progress.get("final", {}).get("completed", False)
-    print(f"Final project: {'completed' if final_done else 'pending'}")
+    for project_id in PROJECT_IDS:
+        project_done = progress.get(project_id, {}).get("completed", False)
+        print(f"{PROJECT_LABELS[project_id]}: {'completed' if project_done else 'pending'}")
     next_up = next((x for x in LESSONS if not progress.get(x.id, {}).get("completed")), None)
     if next_up is None:
         print("Everything is green. Tag it v1.0!")
@@ -162,7 +174,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("list", help="list lessons and their status").set_defaults(func=cmd_list)
 
     test = sub.add_parser("test", help="run the tests of a lesson")
-    test.add_argument("lesson", help="lesson id (01..11), 'final', or 'all'")
+    test.add_argument("lesson", help="lesson id (01..14), 'final', 'migration', or 'all'")
     test.set_defaults(func=cmd_test)
 
     sub.add_parser("progress", help="show overall progress").set_defaults(func=cmd_progress)

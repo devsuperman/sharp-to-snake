@@ -30,6 +30,7 @@ pip install -r requirements-dev.txt
 | `python runner.py list` | Lists lessons with their status (pending / completed) |
 | `python runner.py test 01` | Runs the tests of lesson 01 and records the result |
 | `python runner.py test final` | Runs the tests of the final GPS project |
+| `python runner.py test migration` | Runs the tests of the Part 2 migration project |
 | `python runner.py test all` | Runs every lesson, one after another |
 | `python runner.py progress` | Shows overall progress |
 
@@ -52,6 +53,19 @@ A lesson counts as **completed** only when all of its tests pass. Results are st
 | 10 | Async basics |
 | 11 | Type hints |
 | final | GPS / fleet mini-project (`final_project/`) |
+
+### Part 2: scripts and automation
+
+For the day job: *read, understand and migrate existing Python scripts*. Do it after Part 1.
+
+| # | Topic |
+|---|---|
+| 12 | Reading legacy scripts (`ast`, hidden state, explicit config) |
+| 13 | Dates, time zones and data idioms |
+| 14 | Consuming REST APIs reliably (auth, timeouts, retries, idempotency, pagination) |
+| migration | Migrate a legacy sync script (`migration_project/`) |
+
+Everything in Part 2 is standard library only and runs offline: HTTP is faked in the tests.
 
 ## Ground rules
 

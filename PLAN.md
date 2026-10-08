@@ -62,10 +62,18 @@ sharp-to-snake/
 ├── tests/
 │   ├── test_ex01_types.py
 │   └── ...
-└── final_project/            # GPS mini-project
+├── final_project/            # GPS mini-project (end of Part 1)
+│   ├── README.md
+│   ├── data/
+│   ├── gps/
+│   └── tests/
+├── course_support/           # Part 2: given code (HTTP types, fake client, urllib client)
+└── migration_project/        # Part 2: migrate a legacy sync script (section 12)
     ├── README.md
+    ├── MIGRATION.md          # template to fill in
+    ├── legacy/               # the deliberately bad script
+    ├── positions_sync/       # stubs for the clean re-implementation
     ├── data/
-    ├── gps/
     └── tests/
 ```
 
@@ -186,6 +194,9 @@ Every file in `tests/`:
 | 09 | Modules and packages | `import`, `__init__.py`, `__name__ == "__main__"`, relative imports, `pip` | split a script into a package | namespaces, assemblies, NuGet |
 | 10 | Async basics | `async/await`, `asyncio.gather`, tasks | fetch N simulated resources concurrently | `async/await`, `Task.WhenAll` |
 | 11 | Type hints | annotations, `Optional`, `list[int]`, `TypedDict`, `Protocol`, `mypy` | annotate code from earlier lessons | generics, interfaces, nullable reference types |
+| 12 | Reading legacy scripts | `ast`, entry points, hidden state (`global`), bare `except`, explicit config | inventory a script from its source; build a `Config` from env | top-level statements, `IConfiguration`, Roslyn |
+| 13 | Dates, time zones, data idioms | aware vs naive `datetime`, `zoneinfo`, `itertools`, `defaultdict`, `Counter` | parse mixed timestamps; group by local day; chunk, dedupe, total | `DateTimeOffset`, `TimeZoneInfo`, `Chunk`, LINQ `GroupBy` |
+| 14 | Consuming REST APIs reliably | auth headers, timeouts, retry with backoff, `Retry-After`, idempotency keys, pagination | `call_with_retry`, `post_idempotent`, `process_once`, `iter_pages` | `HttpClient`, Polly, `Idempotency-Key` |
 
 ### Final mini-project: `final_project/` (GPS / fleet)
 
@@ -267,3 +278,46 @@ git push -u origin main
 | Writing Python "with a C# accent" (too many classes, getters/setters) | A "Pitfalls" section in each lesson; prefer functions and dataclasses |
 | Spending weeks on the skeleton instead of studying | Phase 1 limits the runner to the minimum; sophistication comes later |
 | Skipping tests "because it works" | The runner only marks a lesson completed when tests are green |
+
+---
+
+## 12. Part 2: scripts and automation (added after the first plan)
+
+**Why:** the target job asks for *"capacity to read, understand and migrate existing Python
+scripts and automations"* on top of a C#/.NET core. Part 2 trains exactly that skill: Python is
+the *source* language to be understood, not the main stack.
+
+**Scope decisions:** standard library only (no pandas, no `requests`/`boto3`); everything runs
+offline because HTTP is faked in the tests; the migration project reuses the GPS domain.
+AWS and batch/queue processing are deliberately postponed (see "Part 3" below).
+
+### Phase 6: Part 2 lessons (after Part 1 is green)
+
+- [x] Scaffolding delivered: lessons 12 to 14, exercises, tests, `course_support/`, runner entries.
+- [ ] Lesson 12: reading legacy scripts
+- [ ] Lesson 13: dates, time zones and data idioms
+- [ ] Lesson 14: consuming REST APIs reliably
+- [ ] Tag `v1.1-part2-lessons`
+
+### Phase 7: Migration project
+
+- [x] Scaffolding delivered: legacy script, sample data, characterization tests, stubs, parity tests.
+- [ ] Read the legacy script and the characterization tests (README steps 1 and 2)
+- [ ] Fill in `migration_project/MIGRATION.md` (rules, bugs, decisions, C# mapping, cut-over)
+- [ ] Implement `positions_sync/` until `python runner.py test migration` is green
+- [ ] Tag `v1.2-migration`
+
+### Part 3 (postponed, only if wanted)
+
+- AWS for scripts: `boto3` patterns (S3 paginated reads, SQS send/receive/delete), a Lambda
+  handler, CloudWatch logging. Needs fakes for S3/SQS like `FakeClient`.
+- Jobs, queues and batch: scheduled jobs vs events, checkpoints and resume, dead-letter queues,
+  poison messages, reprocessing.
+- Natural follow-up for the migration project: replace the CSV file with an S3 object and the
+  CLI with an SQS-driven worker.
+
+### Definition of Done for Part 2
+
+- [ ] Lessons 12 to 14 green; `runner.py progress` shows 14/14.
+- [ ] `runner.py test migration` green, `MIGRATION.md` completed by me.
+- [ ] I can explain, out loud, the six-step migration method (README of `migration_project/`).
