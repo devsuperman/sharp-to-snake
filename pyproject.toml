@@ -1,11 +1,15 @@
 [tool.pytest.ini_options]
-testpaths = ["tests", "final_project/tests"]
-pythonpath = [".", "final_project"]
+testpaths = ["tests", "final_project/tests", "migration_project/tests"]
+pythonpath = [".", "final_project", "migration_project"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = [".venv"]
+src = [".", "migration_project"]
+extend-exclude = [
+    ".venv",
+    "migration_project/legacy",  # deliberately bad code: it is the thing being migrated
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
