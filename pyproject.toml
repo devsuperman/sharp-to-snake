@@ -1,0 +1,18 @@
+[tool.pytest.ini_options]
+testpaths = ["tests", "final_project/tests"]
+pythonpath = [".", "final_project"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Lessons deliberately show anti-patterns (mutable defaults, bare except, ...).
+"lessons/*" = ["B006", "B008", "B904", "B905", "E501", "E722", "SIM105", "SIM108", "SIM401", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
